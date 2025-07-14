@@ -1,13 +1,14 @@
 
 import React, { useRef } from 'react';
-import type { ExamResult } from '../types';
+import type { ExamResult, Domain } from '../types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 
 interface DashboardProps {
   onStartExam: () => void;
   onStartStudyConfig: () => void;
-  onStartFlashcards: () => void;
+  onStartFlashcardConfig: () => void;
+  onStartWeakestDomainStudy: () => void;
   examHistory: ExamResult[];
   onViewResult: (result: ExamResult) => void;
   onImportHistory: (history: ExamResult[]) => void;
@@ -31,6 +32,10 @@ const IconBrain = () => (
 const IconLayers = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 mr-2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
 );
+const IconCrosshair = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 mr-2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+);
+
 
 const HistoryChart: React.FC<{ history: ExamResult[] }> = ({ history }) => {
     if (history.length < 2) return null;
@@ -61,9 +66,68 @@ const HistoryChart: React.FC<{ history: ExamResult[] }> = ({ history }) => {
             </div>
       </div>
     );
-  };
+};
 
-const Dashboard: React.FC<DashboardProps> = ({ onStartExam, onStartStudyConfig, onStartFlashcards, examHistory, onViewResult, onImportHistory }) => {
+const domainColors: { [key: string]: string } = {
+    "Security Principles": "#8884d8",
+    "Business Continuity (BC), Disaster Recovery (DR) & Incident Response Concepts": "#82ca9d",
+    "Access Controls Concepts": "#ffc658",
+    "Network Security": "#ff7300",
+    "Security Operations": "#00C49F",
+};
+  
+const DomainPerformanceChart: React.FC<{ history: ExamResult[] }> = ({ history }) => {
+    if (history.length < 2) return null;
+
+    const allDomains = Object.keys(domainColors);
+
+    const chartData = history.map((result, index) => {
+        const examData: { [key: string]: string | number | undefined } = {
+            name: `Exam ${index + 1}`,
+        };
+        allDomains.forEach(domain => {
+            const domainScore = result.domainScores.find(ds => ds.domain === domain);
+            examData[domain] = domainScore ? domainScore.score : undefined;
+        });
+        return examData;
+    });
+
+    return (
+        <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 mb-8">
+            <h2 className="text-2xl font-semibold text-white mb-4">Domain Performance Over Time</h2>
+            <div style={{ width: '100%', height: 300 }}>
+                <ResponsiveContainer>
+                    <LineChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 60 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+                        <XAxis dataKey="name" tick={{ fill: '#94a3b8' }} />
+                        <YAxis tick={{ fill: '#94a3b8' }} domain={[0, 100]} unit="%" />
+                        <Tooltip
+                            contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', color: '#cbd5e1' }}
+                            labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
+                            formatter={(value: number) => [`${value.toFixed(1)}%`, 'Score']}
+                        />
+                        <Legend wrapperStyle={{ position: 'relative', bottom: 0, color: '#cbd5e1' }}/>
+                        {allDomains.map(domain => (
+                            <Line 
+                                key={domain} 
+                                type="monotone" 
+                                dataKey={domain} 
+                                name={domain.replace(/ \(.+\)/, '').replace('Concepts', '')}
+                                stroke={domainColors[domain] || '#ffffff'} 
+                                strokeWidth={2} 
+                                connectNulls
+                                dot={{ r: 4 }}
+                                activeDot={{ r: 8 }}
+                            />
+                        ))}
+                    </LineChart>
+                </ResponsiveContainer>
+            </div>
+        </div>
+    );
+};
+
+const Dashboard: React.FC<DashboardProps> = ({ onStartExam, onStartStudyConfig, onStartFlashcardConfig, onStartWeakestDomainStudy, examHistory, onViewResult, onImportHistory }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleExport = () => {
@@ -122,6 +186,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartExam, onStartStudyConfig, 
         </header>
 
         <HistoryChart history={examHistory} />
+        <DomainPerformanceChart history={examHistory} />
+
 
         <main className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-2 bg-slate-800/50 p-8 rounded-2xl border border-slate-700 flex flex-col justify-center">
@@ -142,11 +208,19 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartExam, onStartStudyConfig, 
                     Advanced Study
                 </button>
                  <button
-                    onClick={onStartFlashcards}
+                    onClick={onStartFlashcardConfig}
                     className="w-full flex items-center justify-center bg-transparent hover:bg-violet-500/10 border-2 border-violet-500 text-violet-400 font-bold py-3 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-violet-300 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
                     <IconLayers />
                     Flashcard Review
+                </button>
+                <button
+                    onClick={onStartWeakestDomainStudy}
+                    disabled={examHistory.length === 0}
+                    className="w-full flex items-center justify-center bg-transparent hover:bg-amber-500/10 border-2 border-amber-500 text-amber-400 font-bold py-3 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <IconCrosshair />
+                    Review Weakest Domain
                 </button>
             </div>
             <div className="flex gap-4 mt-8 justify-center">

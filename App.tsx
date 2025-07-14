@@ -5,11 +5,12 @@ import Exam from './components/Exam';
 import { Results } from './components/Results';
 import StudyConfig from './components/StudyConfig';
 import { Study } from './components/Study';
+import FlashcardConfig from './components/FlashcardConfig';
 import { FlashcardPlayer } from './components/FlashcardPlayer';
 import { getQuestions, getFlashcards } from './services/examService';
 import type { Question, ExamResult, Domain, StudyConfigOptions, Flashcard } from './types';
 
-export type Page = 'dashboard' | 'exam' | 'results' | 'study-config' | 'study-session' | 'flashcard';
+export type Page = 'dashboard' | 'exam' | 'results' | 'study-config' | 'study-session' | 'flashcard-config' | 'flashcard';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
@@ -17,6 +18,7 @@ const App: React.FC = () => {
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [currentExamQuestions, setCurrentExamQuestions] = useState<Question[]>([]);
   const [currentStudyQuestions, setCurrentStudyQuestions] = useState<Question[]>([]);
+  const [currentFlashcards, setCurrentFlashcards] = useState<Flashcard[]>([]);
   const [examHistory, setExamHistory] = useState<ExamResult[]>([]);
   const [selectedResult, setSelectedResult] = useState<ExamResult | null>(null);
   const [flaggedQuestions, setFlaggedQuestions] = useState<number[]>([]);
@@ -64,7 +66,7 @@ const App: React.FC = () => {
     setCurrentPage('study-config');
   };
   
-  const startStudySession = (options: StudyConfigOptions) => {
+  const startStudySession = useCallback((options: StudyConfigOptions) => {
     let questionPool: Question[] = [];
 
     switch (options.studyMode) {
@@ -97,9 +99,34 @@ const App: React.FC = () => {
 
     setCurrentStudyQuestions(finalQuestions);
     setCurrentPage('study-session');
+  }, [examHistory, questions, flaggedQuestions]);
+
+  const startWeakestDomainStudy = () => {
+    if (examHistory.length === 0) return;
+    const lastResult = examHistory[examHistory.length - 1];
+    if (!lastResult.domainScores || lastResult.domainScores.length === 0) return;
+
+    const weakestDomainScore = lastResult.domainScores.reduce((weakest, current) =>
+      current.score < weakest.score ? current : weakest
+    );
+    
+    if (weakestDomainScore) {
+      const studyOptions: StudyConfigOptions = {
+        studyMode: 'all-domains',
+        domains: [weakestDomainScore.domain],
+        questionCount: 999, // Get all questions from this domain
+      };
+      startStudySession(studyOptions);
+    }
   };
 
-  const startFlashcards = () => {
+  const goToFlashcardConfig = () => {
+    setCurrentPage('flashcard-config');
+  };
+
+  const startFlashcardSession = (selectedDomains: Domain[]) => {
+    const filteredFlashcards = flashcards.filter(f => selectedDomains.includes(f.domain));
+    setCurrentFlashcards(filteredFlashcards);
     setCurrentPage('flashcard');
   };
 
@@ -161,10 +188,17 @@ const App: React.FC = () => {
             onToggleFlag={handleToggleFlag}
           />
         );
+      case 'flashcard-config':
+        return (
+          <FlashcardConfig
+            onStartFlashcardSession={startFlashcardSession}
+            onGoToDashboard={goToDashboard}
+          />
+        );
       case 'flashcard':
         return (
           <FlashcardPlayer
-            flashcards={flashcards}
+            flashcards={currentFlashcards}
             onGoToDashboard={goToDashboard}
           />
         );
@@ -174,7 +208,8 @@ const App: React.FC = () => {
           <Dashboard
             onStartExam={startNewExam}
             onStartStudyConfig={goToStudyConfig}
-            onStartFlashcards={startFlashcards}
+            onStartFlashcardConfig={goToFlashcardConfig}
+            onStartWeakestDomainStudy={startWeakestDomainStudy}
             examHistory={examHistory}
             onViewResult={viewResultDetails}
             onImportHistory={saveHistory}
