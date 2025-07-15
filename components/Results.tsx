@@ -20,6 +20,10 @@ const IconXCircle = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" hei
 const ReviewQuestion: React.FC<{ question: Question, userAnswer: UserAnswer }> = ({ question, userAnswer }) => {
     return (
         <div className="bg-slate-800/50 border border-slate-700 p-6 rounded-lg mb-4">
+            <div className="flex items-center text-sm text-slate-400 mb-3">
+              <IconTag />
+              <span>Domain: {question.domain}</span>
+            </div>
             <p className="text-lg font-semibold text-slate-200 mb-4">{question.question}</p>
             <div className="space-y-3">
                 {question.options.map((option, index) => {
@@ -59,24 +63,24 @@ export const Results: React.FC<ResultsProps> = ({ result, onGoToDashboard }) => 
   const timeTakenSeconds = result.timeTaken % 60;
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-6xl mx-auto">
-        <header className="mb-8 flex justify-between items-center">
+        <header className="mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div>
                 <h1 className="text-4xl font-bold text-white">Exam Results</h1>
                 <p className="text-slate-400">Completed on {new Date(result.date).toLocaleString()}</p>
             </div>
             <button
                 onClick={onGoToDashboard}
-                className="flex items-center justify-center bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105"
+                className="flex items-center justify-center bg-cyan-500 hover:bg-cyan-400 active:scale-95 text-slate-900 font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105"
             >
                 <IconHome />
                 Dashboard
             </button>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            <div className="lg:col-span-1 bg-slate-800/50 p-6 rounded-2xl border border-slate-700 text-center flex flex-col justify-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div className="md:col-span-1 bg-slate-800/50 p-6 rounded-2xl border border-slate-700 text-center flex flex-col justify-center">
                 <p className="text-lg text-slate-400">Your Score</p>
                 <p className={`text-7xl font-bold my-2 ${isPass ? 'text-green-400' : 'text-red-400'}`}>{result.score}</p>
                 <p className="text-lg text-slate-400">out of 1000</p>
@@ -88,7 +92,7 @@ export const Results: React.FC<ResultsProps> = ({ result, onGoToDashboard }) => 
                     <span>Time Taken: {timeTakenMinutes}m {timeTakenSeconds}s</span>
                 </div>
             </div>
-            <div className="lg:col-span-2 bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+            <div className="md:col-span-2 bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
                 <h2 className="text-2xl font-semibold text-white mb-4">Domain Performance</h2>
                  <div style={{ width: '100%', height: 250 }}>
                     <ResponsiveContainer>
@@ -101,7 +105,7 @@ export const Results: React.FC<ResultsProps> = ({ result, onGoToDashboard }) => 
                                 tick={{ fill: '#cbd5e1', fontSize: '12px' }} 
                                 width={120}
                                 interval={0}
-                                tickFormatter={(value) => value.replace(/ \(.+\)/, '')}
+                                tickFormatter={(value) => value.replace(/ \(.+\)/, '').replace('Concepts', '').replace('Security ', 'Sec. ')}
                             />
                             <Tooltip
                                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', color: '#cbd5e1' }}
@@ -115,13 +119,15 @@ export const Results: React.FC<ResultsProps> = ({ result, onGoToDashboard }) => 
             </div>
         </div>
 
-        <div className="bg-slate-800/50 p-8 rounded-2xl border border-slate-700">
+        <div className="bg-slate-800/50 p-6 sm:p-8 rounded-2xl border border-slate-700">
             <h2 className="text-2xl font-semibold text-white mb-6">Question Review</h2>
-            {result.questions.map((question, index) => {
-                const userAnswer = result.userAnswers.find(ua => ua.questionId === question.id);
-                if (!userAnswer) return null;
-                return <ReviewQuestion key={index} question={question} userAnswer={userAnswer} />
-            })}
+            <div className="space-y-6">
+                {result.questions.map((question, index) => {
+                    const userAnswer = result.userAnswers.find(ua => ua.questionId === question.id);
+                    if (!userAnswer) return null;
+                    return <ReviewQuestion key={index} question={question} userAnswer={userAnswer} />
+                })}
+            </div>
         </div>
       </div>
     </div>

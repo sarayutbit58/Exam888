@@ -107,7 +107,7 @@ const Exam: React.FC<ExamProps> = ({ questions, onFinish, onGoToDashboard, flagg
                   className={`w-full text-left p-4 rounded-lg border-2 transition-all duration-200
                     ${selectedOption === option
                       ? 'bg-cyan-500/20 border-cyan-500 ring-2 ring-cyan-500'
-                      : 'bg-slate-800 border-slate-700 hover:bg-slate-700/50 hover:border-cyan-600'
+                      : 'bg-slate-800 border-slate-700 hover:bg-slate-700/50 hover:border-cyan-600 active:bg-cyan-500/10'
                     }`}
                 >
                   <span className="font-mono text-cyan-400 mr-3">{String.fromCharCode(65 + index)}.</span>
@@ -120,7 +120,7 @@ const Exam: React.FC<ExamProps> = ({ questions, onFinish, onGoToDashboard, flagg
               <button
                 onClick={handleNextQuestion}
                 disabled={selectedOption === null}
-                className="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 disabled:bg-slate-600 disabled:cursor-not-allowed disabled:scale-100"
+                className="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 active:scale-95 disabled:bg-slate-600 disabled:cursor-not-allowed disabled:scale-100"
               >
                 {currentQuestionIndex < questions.length - 1 ? 'Next' : 'Finish Exam'}
               </button>

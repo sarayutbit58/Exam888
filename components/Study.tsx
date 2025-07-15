@@ -54,7 +54,7 @@ export const Study: React.FC<StudyProps> = ({ questions, onGoToDashboard, flagge
 
   const getOptionClass = (option: string) => {
     if (!isAnswered) {
-        return 'bg-slate-800 border-slate-700 hover:bg-slate-700/50 hover:border-cyan-600';
+        return 'bg-slate-800 border-slate-700 hover:bg-slate-700/50 hover:border-cyan-600 active:bg-cyan-500/10';
     }
     
     const isCorrectAnswer = option === currentQuestion.correctAnswer;
@@ -72,10 +72,10 @@ export const Study: React.FC<StudyProps> = ({ questions, onGoToDashboard, flagge
 
   if (!currentQuestion) {
       return (
-          <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">
+          <div className="min-h-screen flex flex-col items-center justify-center p-4">
               <h2 className="text-2xl text-white mb-4">Study Session Complete!</h2>
               <p className="text-slate-400 mb-8">You've finished all the questions in this session.</p>
-              <button onClick={onGoToDashboard} className="flex items-center justify-center bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold py-3 px-6 rounded-lg">
+              <button onClick={onGoToDashboard} className="flex items-center justify-center bg-cyan-500 hover:bg-cyan-400 active:scale-95 text-slate-900 font-bold py-3 px-6 rounded-lg">
                   Back to Dashboard
               </button>
           </div>
@@ -83,7 +83,7 @@ export const Study: React.FC<StudyProps> = ({ questions, onGoToDashboard, flagge
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-4xl">
         <header className="mb-6 flex justify-between items-center gap-4">
             <button onClick={onGoToDashboard} className="flex items-center text-slate-400 hover:text-cyan-400 transition-colors">
@@ -115,7 +115,7 @@ export const Study: React.FC<StudyProps> = ({ questions, onGoToDashboard, flagge
             </div>
 
             {isAnswered && (
-                <div className="mt-6 pt-6 border-t border-slate-700 space-y-4">
+                <div className="mt-6 pt-6 border-t border-slate-700 space-y-4 animate-fade-in">
                     {selectedOption === currentQuestion.correctAnswer ? (
                         <div className="flex items-center text-green-400 font-bold text-lg"><IconCheckCircle/> Correct!</div>
                     ) : (
@@ -132,7 +132,7 @@ export const Study: React.FC<StudyProps> = ({ questions, onGoToDashboard, flagge
               {isAnswered && (
                   <button
                     onClick={handleNextQuestion}
-                    className="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105"
+                    className="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 active:scale-95"
                   >
                     {currentIndex < questions.length - 1 ? 'Next Question' : 'Finish Session'}
                   </button>

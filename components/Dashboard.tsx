@@ -173,7 +173,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartExam, onStartStudyConfig, 
       };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-6xl mx-auto">
         <header className="text-center mb-10">
             <div className="flex justify-center items-center gap-4 mb-4">
@@ -189,27 +189,27 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartExam, onStartStudyConfig, 
         <DomainPerformanceChart history={examHistory} />
 
 
-        <main className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          <div className="lg:col-span-2 bg-slate-800/50 p-8 rounded-2xl border border-slate-700 flex flex-col justify-center">
-            <h2 className="text-2xl font-semibold text-white mb-4">Start a New Session</h2>
+        <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-1 bg-slate-800/50 p-8 rounded-2xl border border-slate-700 flex flex-col justify-center">
+            <h2 className="text-2xl font-semibold text-white mb-6">Start a New Session</h2>
             <div className='w-full space-y-4'>
                 <button
                     onClick={onStartExam}
-                    className="w-full flex items-center justify-center bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-slate-900"
+                    className="w-full flex items-center justify-center bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
                     <IconPlay/>
                     Full Exam Mode
                 </button>
                 <button
                     onClick={onStartStudyConfig}
-                    className="w-full flex items-center justify-center bg-transparent hover:bg-cyan-500/10 border-2 border-cyan-500 text-cyan-400 font-bold py-3 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-slate-900"
+                    className="w-full flex items-center justify-center bg-transparent hover:bg-cyan-500/10 border-2 border-cyan-500 text-cyan-400 font-bold py-3 px-6 rounded-lg transition-colors active:scale-95 focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
                     <IconBrain />
                     Advanced Study
                 </button>
                  <button
                     onClick={onStartFlashcardConfig}
-                    className="w-full flex items-center justify-center bg-transparent hover:bg-violet-500/10 border-2 border-violet-500 text-violet-400 font-bold py-3 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-violet-300 focus:ring-offset-2 focus:ring-offset-slate-900"
+                    className="w-full flex items-center justify-center bg-transparent hover:bg-violet-500/10 border-2 border-violet-500 text-violet-400 font-bold py-3 px-6 rounded-lg transition-colors active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
                     <IconLayers />
                     Flashcard Review
@@ -217,7 +217,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartExam, onStartStudyConfig, 
                 <button
                     onClick={onStartWeakestDomainStudy}
                     disabled={examHistory.length === 0}
-                    className="w-full flex items-center justify-center bg-transparent hover:bg-amber-500/10 border-2 border-amber-500 text-amber-400 font-bold py-3 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center bg-transparent hover:bg-amber-500/10 border-2 border-amber-500 text-amber-400 font-bold py-3 px-6 rounded-lg transition-colors active:scale-95 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <IconCrosshair />
                     Review Weakest Domain
@@ -227,7 +227,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartExam, onStartStudyConfig, 
                 <button
                     onClick={handleExport}
                     disabled={examHistory.length === 0}
-                    className="flex items-center justify-center text-sm bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed text-slate-300 font-medium py-2 px-4 rounded-md transition-colors"
+                    className="flex items-center justify-center text-sm bg-slate-700 hover:bg-slate-600 active:bg-slate-500 disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed text-slate-300 font-medium py-2 px-4 rounded-md transition-colors"
                 >
                     <IconDownload/>
                     Export
@@ -241,7 +241,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartExam, onStartStudyConfig, 
                 />
                 <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center justify-center text-sm bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium py-2 px-4 rounded-md transition-colors"
+                    className="flex items-center justify-center text-sm bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-slate-300 font-medium py-2 px-4 rounded-md transition-colors"
                 >
                     <IconUpload/>
                     Import
@@ -249,7 +249,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartExam, onStartStudyConfig, 
             </div>
           </div>
 
-          <div className="lg:col-span-3 bg-slate-800/50 p-8 rounded-2xl border border-slate-700">
+          <div className="lg:col-span-2 bg-slate-800/50 p-8 rounded-2xl border border-slate-700">
             <h2 className="text-2xl font-semibold text-white mb-4">Exam History</h2>
             {examHistory.length === 0 ? (
                 <div className="text-center py-10">
@@ -258,7 +258,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartExam, onStartStudyConfig, 
                 </div>
             ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 text-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 text-center">
                     <div className="bg-slate-800 p-4 rounded-lg border border-slate-700">
                         <p className="text-sm text-slate-400">Exams Taken</p>
                         <p className="text-2xl font-bold text-white">{stats.totalExams}</p>
@@ -272,7 +272,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartExam, onStartStudyConfig, 
                         <p className={`text-2xl font-bold ${stats.bestScore >= 700 ? 'text-green-400' : 'text-red-400'}`}>{stats.bestScore}</p>
                     </div>
               </div>
-              <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+              <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                 {examHistory.slice().reverse().map((result) => (
                   <div key={result.id} className="bg-slate-800 p-4 rounded-lg flex justify-between items-center border border-slate-700">
                     <div>
@@ -283,7 +283,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartExam, onStartStudyConfig, 
                     </div>
                     <button
                       onClick={() => onViewResult(result)}
-                      className="bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium py-2 px-4 rounded-md transition-colors text-sm"
+                      className="bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-slate-300 font-medium py-2 px-4 rounded-md transition-colors text-sm"
                     >
                       View Details
                     </button>

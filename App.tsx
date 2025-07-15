@@ -218,7 +218,7 @@ const App: React.FC = () => {
     }
   };
 
-  return <div className="min-h-screen bg-slate-900 text-slate-100 font-sans">{renderPage()}</div>;
+  return <main className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 font-sans">{renderPage()}</main>;
 };
 
 export default App;

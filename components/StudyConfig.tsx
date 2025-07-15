@@ -54,7 +54,7 @@ const StudyConfig: React.FC<StudyConfigProps> = ({ onStartStudySession, onGoToDa
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-2xl mx-auto">
         <header className="text-center mb-8">
             <div className="flex justify-center items-center gap-4 mb-4">
@@ -130,14 +130,14 @@ const StudyConfig: React.FC<StudyConfigProps> = ({ onStartStudySession, onGoToDa
             <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-700">
                 <button
                     onClick={onGoToDashboard}
-                    className="flex-1 flex items-center justify-center bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold py-3 px-6 rounded-lg transition-colors"
+                    className="flex-1 flex items-center justify-center bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold py-3 px-6 rounded-lg transition-colors active:scale-95"
                 >
                     Back to Dashboard
                 </button>
                  <button
                     onClick={handleStart}
                     disabled={isStartDisabled()}
-                    className="flex-1 flex items-center justify-center bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 disabled:bg-slate-600 disabled:cursor-not-allowed disabled:scale-100"
+                    className="flex-1 flex items-center justify-center bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 active:scale-95 disabled:bg-slate-600 disabled:cursor-not-allowed disabled:scale-100"
                 >
                     Start Studying
                 </button>
