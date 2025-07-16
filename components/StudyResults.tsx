@@ -3,7 +3,7 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { ExamResult, UserAnswer, Question } from '../types';
 
-interface ResultsProps {
+interface StudyResultsProps {
   result: ExamResult;
   onGoToDashboard: () => void;
 }
@@ -13,7 +13,6 @@ const IconHome = () => (
 );
 
 const IconTag = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-2 text-slate-400"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>;
-const IconClock = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 mr-2 text-slate-400"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
 const IconCheckCircle = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 ml-auto text-green-400"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>;
 const IconXCircle = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 ml-auto text-red-400"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>;
 
@@ -57,17 +56,17 @@ const ReviewQuestion: React.FC<{ question: Question, userAnswer: UserAnswer }> =
     )
 }
 
-const Results: React.FC<ResultsProps> = ({ result, onGoToDashboard }) => {
-  const isPass = result.score >= 700;
-  const timeTakenMinutes = Math.floor(result.timeTaken / 60);
-  const timeTakenSeconds = result.timeTaken % 60;
+const StudyResults: React.FC<StudyResultsProps> = ({ result, onGoToDashboard }) => {
+  const correctCount = result.userAnswers.filter(ua => ua.isCorrect).length;
+  const totalCount = result.questions.length;
+  const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
   return (
     <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-6xl mx-auto">
         <header className="mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div>
-                <h1 className="text-4xl font-bold text-white">Exam Results</h1>
+                <h1 className="text-4xl font-bold text-white">Study Session Results</h1>
                 <p className="text-slate-400">Completed on {new Date(result.date).toLocaleString()}</p>
             </div>
             <button
@@ -81,16 +80,11 @@ const Results: React.FC<ResultsProps> = ({ result, onGoToDashboard }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div className="md:col-span-1 bg-slate-800/50 p-6 rounded-2xl border border-slate-700 text-center flex flex-col justify-center">
-                <p className="text-lg text-slate-400">Your Score</p>
-                <p className={`text-7xl font-bold my-2 ${isPass ? 'text-green-400' : 'text-red-400'}`}>{result.score}</p>
-                <p className="text-lg text-slate-400">out of 1000</p>
-                <p className={`text-2xl font-semibold mt-4 py-2 px-4 rounded-lg ${isPass ? 'bg-green-500/10 text-green-300' : 'bg-red-500/10 text-red-300'}`}>
-                    {isPass ? 'PASS' : 'FAIL'}
+                <p className="text-lg text-slate-400">Overall Accuracy</p>
+                <p className="text-7xl font-bold my-2 text-cyan-400">{accuracy}%</p>
+                <p className="text-lg text-slate-300">
+                    <span className="font-bold text-white">{correctCount}</span> / <span className="font-bold text-white">{totalCount}</span> correct
                 </p>
-                <div className="flex items-center justify-center mt-4 text-slate-300">
-                    <IconClock />
-                    <span>Time Taken: {timeTakenMinutes}m {timeTakenSeconds}s</span>
-                </div>
             </div>
             <div className="md:col-span-2 bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
                 <h2 className="text-2xl font-semibold text-white mb-4">Domain Performance</h2>
@@ -134,4 +128,4 @@ const Results: React.FC<ResultsProps> = ({ result, onGoToDashboard }) => {
   );
 };
 
-export default Results;
+export default StudyResults;

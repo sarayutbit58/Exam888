@@ -4,6 +4,7 @@ import type { Question } from '../types';
 
 interface StudyProps {
   questions: Question[];
+  onFinish: (questions: Question[], userAnswers: Map<number, string>) => void;
   onGoToDashboard: () => void;
   flaggedQuestions: number[];
   onToggleFlag: (questionId: number) => void;
@@ -29,16 +30,22 @@ const FlagButton: React.FC<{ questionId: number, flaggedQuestions: number[], onT
 };
 
 
-export const Study: React.FC<StudyProps> = ({ questions, onGoToDashboard, flaggedQuestions, onToggleFlag }) => {
+const Study: React.FC<StudyProps> = ({ questions, onFinish, onGoToDashboard, flaggedQuestions, onToggleFlag }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
+  const [userAnswers, setUserAnswers] = useState<Map<number, string>>(new Map());
 
   const currentQuestion = questions[currentIndex];
 
   const handleSelectOption = (option: string) => {
     if (isAnswered) return;
     setSelectedOption(option);
+
+    const newAnswers = new Map(userAnswers);
+    newAnswers.set(currentQuestion.id, option);
+    setUserAnswers(newAnswers);
+
     setIsAnswered(true);
   };
   
@@ -48,7 +55,7 @@ export const Study: React.FC<StudyProps> = ({ questions, onGoToDashboard, flagge
           setSelectedOption(null);
           setIsAnswered(false);
       } else {
-          onGoToDashboard();
+          onFinish(questions, userAnswers);
       }
   };
 
@@ -143,3 +150,5 @@ export const Study: React.FC<StudyProps> = ({ questions, onGoToDashboard, flagge
     </div>
   );
 };
+
+export default Study;

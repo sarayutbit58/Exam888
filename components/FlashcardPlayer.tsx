@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { Flashcard } from '../types';
 
@@ -19,7 +20,7 @@ interface FlashcardPlayerProps {
   onGoToDashboard: () => void;
 }
 
-export const FlashcardPlayer: React.FC<FlashcardPlayerProps> = ({ flashcards, onGoToDashboard }) => {
+const FlashcardPlayer: React.FC<FlashcardPlayerProps> = ({ flashcards, onGoToDashboard }) => {
   const [shuffledFlashcards, setShuffledFlashcards] = useState<Flashcard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -182,3 +183,5 @@ export const FlashcardPlayer: React.FC<FlashcardPlayerProps> = ({ flashcards, on
     </div>
   );
 };
+
+export default FlashcardPlayer;

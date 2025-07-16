@@ -2,17 +2,24 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Dashboard from './components/Dashboard';
 import Exam from './components/Exam';
-import { Results } from './components/Results';
+import Results from './components/Results';
 import StudyConfig from './components/StudyConfig';
-import { Study } from './components/Study';
+import Study from './components/Study';
+import StudyResults from './components/StudyResults';
 import FlashcardConfig from './components/FlashcardConfig';
-import { FlashcardPlayer } from './components/FlashcardPlayer';
-import { getQuestions, getFlashcards } from './services/examService';
+import FlashcardPlayer from './components/FlashcardPlayer';
+import { getQuestions, getFlashcards, calculateResults } from './services/examService';
 import type { Question, ExamResult, Domain, StudyConfigOptions, Flashcard } from './types';
+import TestRunner from './components/TestRunner';
 
-export type Page = 'dashboard' | 'exam' | 'results' | 'study-config' | 'study-session' | 'flashcard-config' | 'flashcard';
+export type Page = 'dashboard' | 'exam' | 'results' | 'study-config' | 'study-session' | 'study-results' | 'flashcard-config' | 'flashcard';
 
 const App: React.FC = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('test') === 'true') {
+    return <TestRunner />;
+  }
+
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
   const [questions, setQuestions] = useState<Question[]>([]);
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
@@ -21,6 +28,7 @@ const App: React.FC = () => {
   const [currentFlashcards, setCurrentFlashcards] = useState<Flashcard[]>([]);
   const [examHistory, setExamHistory] = useState<ExamResult[]>([]);
   const [selectedResult, setSelectedResult] = useState<ExamResult | null>(null);
+  const [currentStudyResult, setCurrentStudyResult] = useState<ExamResult | null>(null);
   const [flaggedQuestions, setFlaggedQuestions] = useState<number[]>([]);
 
   useEffect(() => {
@@ -137,6 +145,13 @@ const App: React.FC = () => {
     setCurrentPage('results');
   };
 
+  const finishStudySession = (answeredQuestions: Question[], answers: Map<number, string>) => {
+    // Study sessions are not timed.
+    const result = calculateResults(answeredQuestions, answers, 0); 
+    setCurrentStudyResult(result);
+    setCurrentPage('study-results');
+  };
+
   const viewResultDetails = (result: ExamResult) => {
     setSelectedResult(result);
     setCurrentPage('results');
@@ -144,6 +159,7 @@ const App: React.FC = () => {
 
   const goToDashboard = () => {
     setSelectedResult(null);
+    setCurrentStudyResult(null);
     setCurrentPage('dashboard');
   };
 
@@ -183,11 +199,23 @@ const App: React.FC = () => {
         return (
           <Study
             questions={currentStudyQuestions}
+            onFinish={finishStudySession}
             onGoToDashboard={goToDashboard}
             flaggedQuestions={flaggedQuestions}
             onToggleFlag={handleToggleFlag}
           />
         );
+      case 'study-results':
+        if (currentStudyResult) {
+          return (
+            <StudyResults
+              result={currentStudyResult}
+              onGoToDashboard={goToDashboard}
+            />
+          );
+        }
+        goToDashboard();
+        return null;
       case 'flashcard-config':
         return (
           <FlashcardConfig
