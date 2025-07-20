@@ -1,6 +1,0 @@
-{
-  "name": "ISC2 CC Exam Simulator",
-  "description": "A web application to help users practice for the ISC2 Certified in Cybersecurity (CC) exam. It features a realistic exam simulation with 100 questions, a timer, results tracking, and performance analysis by domain.",
-  "requestFramePermissions": [],
-  "prompt": ""
-}
