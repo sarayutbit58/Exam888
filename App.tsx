@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import Dashboard from './components/Dashboard';
 import Exam from './components/Exam';
@@ -18,6 +19,38 @@ const App: React.FC = () => {
   if (urlParams.get('test') === 'true') {
     return <TestRunner />;
   }
+
+  // Anti-inspection measures to deter source code viewing
+  useEffect(() => {
+    // These are deterrents against casual inspection, not foolproof security.
+    const handleContextMenu = (event: MouseEvent) => event.preventDefault();
+    document.addEventListener('contextmenu', handleContextMenu);
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'F12' ||
+         (event.ctrlKey && event.shiftKey && ['I', 'J', 'C'].includes(event.key.toUpperCase())) ||
+         (event.ctrlKey && event.key.toUpperCase() === 'U')) {
+        event.preventDefault();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Anti-debugging: Continuously trigger the debugger to frustrate inspection.
+    const intervalId = setInterval(() => {
+      try {
+        (function() { return false; }['constructor']('debugger')['call']());
+      } catch (e) {
+        // Ignore errors when dev tools are not open
+      }
+    }, 50);
+
+    // Cleanup function to remove listeners when the component unmounts
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('keydown', handleKeyDown);
+      clearInterval(intervalId);
+    };
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   // Theme state
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
