@@ -4,7 +4,6 @@ import ClickableExplanation from './ClickableExplanation';
 
 interface StudyProps {
   questions: Question[];
-  onFinish: (questions: Question[], userAnswers: Map<number, string>) => void;
   onGoToDashboard: () => void;
   flaggedQuestions: number[];
   onToggleFlag: (questionId: number) => void;
@@ -31,22 +30,20 @@ const FlagButton: React.FC<{ questionId: number, flaggedQuestions: number[], onT
 };
 
 
+<<<<<<< HEAD
 const Study: React.FC<StudyProps> = ({ questions, onFinish, onGoToDashboard, flaggedQuestions, onToggleFlag, onAskAI }) => {
+=======
+export const Study: React.FC<StudyProps> = ({ questions, onGoToDashboard, flaggedQuestions, onToggleFlag }) => {
+>>>>>>> parent of 9d8d146 (r4)
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
-  const [userAnswers, setUserAnswers] = useState<Map<number, string>>(new Map());
 
   const currentQuestion = questions[currentIndex];
 
   const handleSelectOption = (option: string) => {
     if (isAnswered) return;
     setSelectedOption(option);
-
-    const newAnswers = new Map(userAnswers);
-    newAnswers.set(currentQuestion.id, option);
-    setUserAnswers(newAnswers);
-
     setIsAnswered(true);
   };
   
@@ -56,7 +53,7 @@ const Study: React.FC<StudyProps> = ({ questions, onFinish, onGoToDashboard, fla
           setSelectedOption(null);
           setIsAnswered(false);
       } else {
-          onFinish(questions, userAnswers);
+          onGoToDashboard();
       }
   };
 
@@ -158,6 +155,10 @@ const Study: React.FC<StudyProps> = ({ questions, onFinish, onGoToDashboard, fla
       </div>
     </div>
   );
+<<<<<<< HEAD
 };
 
 export default Study;
+=======
+};
+>>>>>>> parent of 9d8d146 (r4)

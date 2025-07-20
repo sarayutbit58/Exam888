@@ -16,7 +16,51 @@ const IconHome = () => (
 
 const IconClock = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 mr-2 text-slate-500 dark:text-slate-400"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
 
+<<<<<<< HEAD
 const Results: React.FC<ResultsProps> = ({ result, onGoToDashboard, onAskAI, theme }) => {
+=======
+const ReviewQuestion: React.FC<{ question: Question, userAnswer: UserAnswer }> = ({ question, userAnswer }) => {
+    return (
+        <div className="bg-slate-800/50 border border-slate-700 p-6 rounded-lg mb-4">
+            <div className="flex items-center text-sm text-slate-400 mb-3">
+              <IconTag />
+              <span>Domain: {question.domain}</span>
+            </div>
+            <p className="text-lg font-semibold text-slate-200 mb-4">{question.question}</p>
+            <div className="space-y-3">
+                {question.options.map((option, index) => {
+                    const isCorrect = option === question.correctAnswer;
+                    const isSelected = option === userAnswer.selectedAnswer;
+                    let optionClass = 'border-slate-600 bg-slate-800';
+                    let icon = null;
+
+                    if(isCorrect) {
+                        optionClass = 'border-green-500 bg-green-500/10';
+                        icon = <IconCheckCircle />;
+                    } else if (isSelected) {
+                        optionClass = 'border-red-500 bg-red-500/10';
+                        icon = <IconXCircle />;
+                    }
+
+                    return (
+                        <div key={index} className={`p-3 border-2 rounded-md flex items-center ${optionClass}`}>
+                           <span className="font-mono text-cyan-400 mr-3">{String.fromCharCode(65 + index)}.</span>
+                           <span className="text-slate-300 flex-grow">{option}</span>
+                           {icon}
+                        </div>
+                    )
+                })}
+            </div>
+            <div className="mt-4 pt-4 border-t border-slate-700">
+                <p className="font-semibold text-cyan-400 mb-2">Explanation:</p>
+                <p className="text-slate-300 whitespace-pre-wrap">{question.explanation}</p>
+            </div>
+        </div>
+    )
+}
+
+export const Results: React.FC<ResultsProps> = ({ result, onGoToDashboard }) => {
+>>>>>>> parent of 9d8d146 (r4)
   const isPass = result.score >= 700;
   const timeTakenMinutes = Math.floor(result.timeTaken / 60);
   const timeTakenSeconds = result.timeTaken % 60;
@@ -70,7 +114,7 @@ const Results: React.FC<ResultsProps> = ({ result, onGoToDashboard, onAskAI, the
                                 tick={{ fill: textColor, fontSize: '12px' }} 
                                 width={120}
                                 interval={0}
-                                tickFormatter={(value) => typeof value === 'string' ? value.replace(/ \(.+\)/, '').replace('Concepts', '').replace('Security ', 'Sec. ') : value}
+                                tickFormatter={(value) => value.replace(/ \(.+\)/, '').replace('Concepts', '').replace('Security ', 'Sec. ')}
                             />
                             <Tooltip
                                 cursor={{fill: 'rgba(100,116,139,0.1)'}}
@@ -99,6 +143,10 @@ const Results: React.FC<ResultsProps> = ({ result, onGoToDashboard, onAskAI, the
       </div>
     </div>
   );
+<<<<<<< HEAD
 };
 
 export default Results;
+=======
+};
+>>>>>>> parent of 9d8d146 (r4)

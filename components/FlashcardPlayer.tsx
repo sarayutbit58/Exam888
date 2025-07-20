@@ -19,7 +19,7 @@ interface FlashcardPlayerProps {
   onGoToDashboard: () => void;
 }
 
-const FlashcardPlayer: React.FC<FlashcardPlayerProps> = ({ flashcards, onGoToDashboard }) => {
+export const FlashcardPlayer: React.FC<FlashcardPlayerProps> = ({ flashcards, onGoToDashboard }) => {
   const [shuffledFlashcards, setShuffledFlashcards] = useState<Flashcard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -182,5 +182,8 @@ const FlashcardPlayer: React.FC<FlashcardPlayerProps> = ({ flashcards, onGoToDas
     </div>
   );
 };
+<<<<<<< HEAD
 
 export default FlashcardPlayer;
+=======
+>>>>>>> parent of 9d8d146 (r4)
