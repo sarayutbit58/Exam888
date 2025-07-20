@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 
 interface TimerProps {
@@ -30,10 +29,10 @@ const Timer: React.FC<TimerProps> = ({ duration, onTimeUp }) => {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
-  const timerColor = timeLeft < 300 ? 'text-red-400' : 'text-slate-200';
+  const timerColor = timeLeft < 300 ? 'text-red-500 dark:text-red-400' : 'text-slate-800 dark:text-slate-200';
 
   return (
-    <div className={`flex items-center text-lg font-bold font-mono p-2 rounded-lg bg-slate-800 border border-slate-700 ${timerColor}`}>
+    <div className={`flex items-center text-lg font-bold font-mono p-2 rounded-lg bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 ${timerColor}`}>
         <IconClock />
         <span>
             {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}

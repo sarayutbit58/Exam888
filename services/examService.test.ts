@@ -1,6 +1,6 @@
-
 import { getQuestions, getFlashcards, calculateResults } from './examService';
-import { Domain, Question } from '../types';
+import { Domain, Question, ExamResult } from '../types';
+import { isValidHistory } from './utils';
 
 // --- Test Utilities ---
 class AssertionError extends Error {
@@ -29,6 +29,16 @@ const mockQuestions: Question[] = [
   { id: 3, question: 'Q3', options: ['E', 'F'], correctAnswer: 'E', domain: Domain.NetworkSecurity, explanation: '', keywords: [] },
   { id: 4, question: 'Q4', options: ['G', 'H'], correctAnswer: 'H', domain: Domain.AccessControls, explanation: '', keywords: [] },
 ];
+
+const validHistoryItem: ExamResult = {
+  id: '2024-01-01T12:00:00.000Z',
+  date: '2024-01-01T12:00:00.000Z',
+  score: 800,
+  timeTaken: 3600,
+  userAnswers: [{ questionId: 1, selectedAnswer: 'A', isCorrect: true }],
+  questions: [], // Not validating content of questions array for this test
+  domainScores: [{ domain: Domain.SecurityPrinciples, total: 10, correct: 8, score: 80 }],
+};
 
 
 // --- Test Cases ---
@@ -109,6 +119,43 @@ const tests = {
       assert(f.domain && f.domain !== Domain.Unknown, `Flashcard ${f.id} has Unknown domain`);
     });
   },
+
+  'isValidHistory: should return true for valid history data': () => {
+    assert(isValidHistory([validHistoryItem]), 'Should return true for a valid history object');
+  },
+  
+  'isValidHistory: should return true for an empty array': () => {
+    assert(isValidHistory([]), 'Should return true for an empty array');
+  },
+
+  'isValidHistory: should return false for non-array input': () => {
+    assert(!isValidHistory(null), 'Should be false for null');
+    assert(!isValidHistory(undefined), 'Should be false for undefined');
+    assert(!isValidHistory({}), 'Should be false for an object');
+    assert(!isValidHistory("[]"), 'Should be false for a JSON string');
+  },
+  
+  'isValidHistory: should return false for array with invalid items': () => {
+    const invalidItem = JSON.parse(JSON.stringify(validHistoryItem));
+    delete invalidItem.score; // remove property
+    assert(!isValidHistory([invalidItem]), 'Should be false for missing property (score)');
+    
+    const invalidType = JSON.parse(JSON.stringify(validHistoryItem));
+    invalidType.id = 123; // wrong type
+    assert(!isValidHistory([invalidType]), 'Should be false for wrong data type (id)');
+  },
+
+  'isValidHistory: should return false for invalid userAnswers structure': () => {
+    const invalidUserAnswerHistory = JSON.parse(JSON.stringify([validHistoryItem]));
+    invalidUserAnswerHistory[0].userAnswers = [{ questionId: 1, selectedAnswer: 'A' }]; // isCorrect is missing
+    assert(!isValidHistory(invalidUserAnswerHistory), 'Should be false for invalid userAnswers structure');
+  },
+
+  'isValidHistory: should return false for invalid domainScores structure': () => {
+    const invalidDomainScoreHistory = JSON.parse(JSON.stringify([validHistoryItem]));
+    invalidDomainScoreHistory[0].domainScores = [{ domain: 'MadeUpDomain', total: 1, correct: 1, score: 100 }]; // invalid domain enum
+    assert(!isValidHistory(invalidDomainScoreHistory), 'Should be false for invalid domainScores structure');
+  }
 };
 
 

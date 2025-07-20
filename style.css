@@ -1,0 +1,43 @@
+/* Sets light mode as the default and dark mode when .dark class is present */
+body {
+    background-color: #f1f5f9; /* slate-100 */
+}
+html.dark body {
+    background-color: #0f172a; /* slate-900 */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+/* Light mode scrollbar */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #e2e8f0; /* slate-200 */
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* slate-300 */
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* slate-400 */
+}
+
+/* Dark mode scrollbar */
+html.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background: #1e293b; /* slate-800 */
+}
+html.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #475569; /* slate-600 */
+}
+html.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #64748b; /* slate-500 */
+}
+
+
+.toggle-checkbox:checked {
+  right: 0;
+  border-color: #22d3ee; /* cyan-500 */
+  transform: translateX(16px);
+}
+.toggle-checkbox:checked + .toggle-label {
+  background-color: #22d3ee; /* cyan-500 */
+}

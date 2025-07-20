@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { Flashcard } from '../types';
 
@@ -104,8 +103,8 @@ const FlashcardPlayer: React.FC<FlashcardPlayerProps> = ({ flashcards, onGoToDas
   if (!shuffledFlashcards || shuffledFlashcards.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <h2 className="text-2xl text-white mb-4">No Flashcards Available</h2>
-        <p className="text-slate-400 mb-8">There are no flashcards to review in this session.</p>
+        <h2 className="text-2xl text-slate-900 dark:text-white mb-4">No Flashcards Available</h2>
+        <p className="text-slate-500 dark:text-slate-400 mb-8">There are no flashcards to review in this session.</p>
         <button onClick={onGoToDashboard} className="flex items-center justify-center bg-cyan-500 hover:bg-cyan-400 active:scale-95 text-slate-900 font-bold py-3 px-6 rounded-lg">
           Back to Dashboard
         </button>
@@ -119,24 +118,24 @@ const FlashcardPlayer: React.FC<FlashcardPlayerProps> = ({ flashcards, onGoToDas
     <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-2xl">
         <header className="mb-6 flex justify-between items-center gap-4">
-          <button onClick={onGoToDashboard} className="flex items-center text-slate-400 hover:text-cyan-400 transition-colors">
+          <button onClick={onGoToDashboard} className="flex items-center text-slate-500 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors">
             <IconHome /> Dashboard
           </button>
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-white">Flashcard Review</h1>
-            <p className="text-slate-400">Card {currentIndex + 1} of {shuffledFlashcards.length}</p>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Flashcard Review</h1>
+            <p className="text-slate-500 dark:text-slate-400">Card {currentIndex + 1} of {shuffledFlashcards.length}</p>
           </div>
           <div className="flex gap-2">
             <button
               onClick={shuffleCards}
-              className="flex items-center justify-center text-sm bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-slate-300 font-medium p-2 sm:py-2 sm:px-4 rounded-md transition-colors"
+              className="flex items-center justify-center text-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 active:bg-slate-500 text-slate-700 dark:text-slate-300 font-medium p-2 sm:py-2 sm:px-4 rounded-md transition-colors"
               aria-label="Shuffle cards"
             >
               <IconShuffle /> <span className="hidden sm:inline ml-1">Shuffle</span>
             </button>
             <button
               onClick={() => setIsFlipped(!isFlipped)}
-              className="flex items-center justify-center text-sm bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-slate-300 font-medium p-2 sm:py-2 sm:px-4 rounded-md transition-colors"
+              className="flex items-center justify-center text-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 active:bg-slate-500 text-slate-700 dark:text-slate-300 font-medium p-2 sm:py-2 sm:px-4 rounded-md transition-colors"
               aria-label="Flip card"
             >
               <IconRotateCw /> <span className="hidden sm:inline ml-1">Flip</span>
@@ -154,11 +153,11 @@ const FlashcardPlayer: React.FC<FlashcardPlayerProps> = ({ flashcards, onGoToDas
                     className={`relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] animate-fade-in ${isFlipped ? '[transform:rotateY(180deg)]' : ''}`}
                     onClick={() => setIsFlipped(!isFlipped)}
                 >
-                    <div ref={frontEl} className="absolute w-full h-full [backface-visibility:hidden] bg-slate-800 border-2 border-cyan-500 rounded-2xl flex flex-col justify-center items-center p-6 sm:p-8 cursor-pointer shadow-lg shadow-cyan-500/10">
-                        <p className="text-center text-2xl sm:text-3xl font-bold text-white">{currentFlashcard.front}</p>
+                    <div ref={frontEl} className="absolute w-full h-full [backface-visibility:hidden] bg-white dark:bg-slate-800 border-2 border-cyan-500 rounded-2xl flex flex-col justify-center items-center p-6 sm:p-8 cursor-pointer shadow-lg shadow-cyan-500/10">
+                        <p className="text-center text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white">{currentFlashcard.front}</p>
                     </div>
-                    <div ref={backEl} className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-slate-700 border-2 border-slate-600 rounded-2xl flex flex-col justify-start items-start p-6 sm:p-8 cursor-pointer overflow-y-auto custom-scrollbar">
-                        <p className="text-slate-200 whitespace-pre-wrap">{currentFlashcard.back}</p>
+                    <div ref={backEl} className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-gray-100 dark:bg-slate-700 border-2 border-gray-200 dark:border-slate-600 rounded-2xl flex flex-col justify-start items-start p-6 sm:p-8 cursor-pointer overflow-y-auto custom-scrollbar">
+                        <p className="text-slate-700 dark:text-slate-200 whitespace-pre-wrap">{currentFlashcard.back}</p>
                     </div>
                 </div>
             </div>
@@ -167,7 +166,7 @@ const FlashcardPlayer: React.FC<FlashcardPlayerProps> = ({ flashcards, onGoToDas
                 <button
                     onClick={handlePrev}
                     disabled={currentIndex === 0}
-                    className="flex-1 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-slate-300 font-bold py-3 px-6 sm:px-8 rounded-lg transition-colors disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed"
+                    className="flex-1 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 active:bg-slate-500 text-slate-800 dark:text-slate-300 font-bold py-3 px-6 sm:px-8 rounded-lg transition-colors disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:text-slate-400 dark:disabled:text-slate-500 disabled:cursor-not-allowed"
                 >
                     Previous
                 </button>

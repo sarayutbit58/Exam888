@@ -1,5 +1,6 @@
 
 import { Domain, Question, ExamResult, UserAnswer, DomainScore, Flashcard } from '../types';
+import { rawText4 } from './syntheticData';
 
 const DOMAIN_KEYWORDS: Record<Domain, string[]> = {
     [Domain.SecurityPrinciples]: ["security principle", "confidentiality", "integrity", "availability", "cia", "privacy", "risk management", "risk", "security control", "isc2", "ethic", "governance", "policy", "policies", "procedure", "standard", "guideline", "regulation", "bell-lapadula", "data classification"],
@@ -1010,6 +1011,47 @@ export function getQuestions(): Question[] {
         }
     });
 
+    // --- PARSER 4: Synthetic Data ---
+    const blocks4 = rawText4.trim().split(/\*\* Question \d+\*\*/).filter(Boolean);
+    blocks4.forEach(block => {
+        try {
+            const questionMatch = block.match(/^(.*?)\s+Options:/s);
+            const optionsMatch = block.match(/Options:\s+([\s\S]+?)\s+Correct Option:/s);
+            const correctOptionMatch = block.match(/Correct Option:\s+([A-D])\s/s);
+            const keywordsMatch = block.match(/Keywords for Exam:\s+(.*?)\s+Detailed Explanation:/s);
+            const explanationMatch = block.match(/Detailed Explanation:\s+([\s\S]+)$/s);
+
+            if (questionMatch && optionsMatch && correctOptionMatch && keywordsMatch && explanationMatch) {
+                const questionText = questionMatch[1].trim();
+                const optionsRaw = optionsMatch[1].trim();
+                const correctLetter = correctOptionMatch[1];
+                const keywords = keywordsMatch[1].trim().split(/,\s*/);
+                const explanation = explanationMatch[1].trim();
+                
+                const optionRegex = /[A-D]\s(.*?)(?=\s[B-D]\s|$)/gs;
+                const options = Array.from(optionsRaw.matchAll(optionRegex), m => m[1].trim());
+
+                if (options.length < 2) return;
+
+                const correctIndex = correctLetter.charCodeAt(0) - 'A'.charCodeAt(0);
+                if (correctIndex >= 0 && correctIndex < options.length) {
+                    const correctAnswer = options[correctIndex];
+                     allQuestions.push({
+                        id: idCounter++,
+                        question: questionText,
+                        options,
+                        correctAnswer,
+                        explanation,
+                        keywords,
+                        domain: mapKeywordsToDomain(keywords)
+                    });
+                }
+            }
+        } catch (e) {
+            console.error("Error parsing block from rawText4:", block, e);
+        }
+    });
+
     return allQuestions;
 }
 
@@ -1074,6 +1116,38 @@ export function getFlashcards(): Flashcard[] {
             }
         } catch (e) {
             console.error("Error parsing concept flashcard from rawText2", e);
+        }
+    });
+
+    // --- PARSER 4: From rawText4 (Synthetic Concept Flashcards) ---
+    const blocks4 = rawText4.trim().split(/\*\* Question \d+\*\*/).filter(Boolean);
+    blocks4.forEach(block => {
+        try {
+            const correctOptionMatch = block.match(/Correct Option:\s+([A-D]\s)([\s\S]+?)\s+Keywords for Exam:/s);
+            const keywordsMatch = block.match(/Keywords for Exam:\s+(.*?)\s+Detailed Explanation:/s);
+            const explanationMatch = block.match(/Detailed Explanation:\s+([\s\S]+)$/s);
+
+            if (correctOptionMatch && keywordsMatch && explanationMatch) {
+                let front = correctOptionMatch[2].trim();
+                front = front.split(/(\s\(|\sso\s|Note:)/)[0].trim();
+                front = front.replace(/^[a-z]/, char => char.toUpperCase());
+
+
+                if (!front || front.length < 3) return;
+
+                const back = explanationMatch[1].trim();
+                const keywords = keywordsMatch[1].trim().split(/,\s*/);
+                const domain = mapKeywordsToDomain(keywords);
+
+                flashcards.push({
+                    id: idCounter++,
+                    front: front,
+                    back,
+                    domain
+                });
+            }
+        } catch (e) {
+            console.error("Error parsing concept flashcard from rawText4", e);
         }
     });
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import Dashboard from './components/Dashboard';
 import Exam from './components/Exam';
@@ -8,6 +7,7 @@ import Study from './components/Study';
 import StudyResults from './components/StudyResults';
 import FlashcardConfig from './components/FlashcardConfig';
 import FlashcardPlayer from './components/FlashcardPlayer';
+import AITutor from './components/AITutor';
 import { getQuestions, getFlashcards, calculateResults } from './services/examService';
 import type { Question, ExamResult, Domain, StudyConfigOptions, Flashcard } from './types';
 import TestRunner from './components/TestRunner';
@@ -20,6 +20,28 @@ const App: React.FC = () => {
     return <TestRunner />;
   }
 
+  // Theme state
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+      return localStorage.getItem('theme') as 'light' | 'dark';
+    }
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  });
+  
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
   const [questions, setQuestions] = useState<Question[]>([]);
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
@@ -30,6 +52,29 @@ const App: React.FC = () => {
   const [selectedResult, setSelectedResult] = useState<ExamResult | null>(null);
   const [currentStudyResult, setCurrentStudyResult] = useState<ExamResult | null>(null);
   const [flaggedQuestions, setFlaggedQuestions] = useState<number[]>([]);
+
+  // AI Tutor State
+  const [isAiEnabled, setIsAiEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem('isAiEnabled');
+    return saved ? JSON.parse(saved) : false; // Default to opt-out
+  });
+  const [isTutorOpen, setIsTutorOpen] = useState(false);
+  const [tutorConcept, setTutorConcept] = useState('');
+
+  const handleToggleAiFeatures = useCallback(() => {
+    setIsAiEnabled(prev => {
+      const newState = !prev;
+      localStorage.setItem('isAiEnabled', JSON.stringify(newState));
+      if (!newState) setIsTutorOpen(false); // Close tutor if AI is disabled
+      return newState;
+    });
+  }, []);
+
+  const handleAskAI = (concept: string) => {
+    if (!isAiEnabled) return;
+    setTutorConcept(concept);
+    setIsTutorOpen(true);
+  };
 
   useEffect(() => {
     const loadedQuestions = getQuestions();
@@ -181,6 +226,8 @@ const App: React.FC = () => {
             <Results
               result={selectedResult}
               onGoToDashboard={goToDashboard}
+              onAskAI={isAiEnabled ? handleAskAI : undefined}
+              theme={theme}
             />
           );
         }
@@ -203,6 +250,7 @@ const App: React.FC = () => {
             onGoToDashboard={goToDashboard}
             flaggedQuestions={flaggedQuestions}
             onToggleFlag={handleToggleFlag}
+            onAskAI={isAiEnabled ? handleAskAI : undefined}
           />
         );
       case 'study-results':
@@ -211,6 +259,8 @@ const App: React.FC = () => {
             <StudyResults
               result={currentStudyResult}
               onGoToDashboard={goToDashboard}
+              onAskAI={isAiEnabled ? handleAskAI : undefined}
+              theme={theme}
             />
           );
         }
@@ -241,12 +291,21 @@ const App: React.FC = () => {
             examHistory={examHistory}
             onViewResult={viewResultDetails}
             onImportHistory={saveHistory}
+            isAiEnabled={isAiEnabled}
+            onToggleAiFeatures={handleToggleAiFeatures}
+            theme={theme}
+            setTheme={setTheme}
           />
         );
     }
   };
 
-  return <main className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 font-sans">{renderPage()}</main>;
+  return (
+    <main className="min-h-screen bg-transparent text-slate-800 dark:text-slate-100 font-sans">
+      {renderPage()}
+      {isAiEnabled && isTutorOpen && <AITutor concept={tutorConcept} onClose={() => setIsTutorOpen(false)} />}
+    </main>
+  );
 };
 
 export default App;
