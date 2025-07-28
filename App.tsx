@@ -117,10 +117,23 @@ const App: React.FC = () => {
       : [...flaggedQuestions, questionId];
     saveFlaggedQuestions(newFlags);
   };
+  
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  };
 
   const startNewExam = () => {
     const shuffled = [...questions].sort(() => 0.5 - Math.random());
-    setCurrentExamQuestions(shuffled.slice(0, 100));
+    const examQuestions = shuffled.slice(0, 100).map(q => ({
+      ...q,
+      options: shuffleArray(q.options)
+    }));
+    setCurrentExamQuestions(examQuestions);
     setCurrentPage('exam');
   };
 
@@ -155,13 +168,27 @@ const App: React.FC = () => {
     }
     
     const shuffled = [...questionPool].sort(() => 0.5 - Math.random());
-    const finalQuestions = options.studyMode === 'all-domains'
+    let finalQuestions = options.studyMode === 'all-domains'
       ? shuffled.slice(0, options.questionCount)
       : shuffled;
+    
+    finalQuestions = finalQuestions.map(q => ({
+        ...q,
+        options: shuffleArray(q.options)
+    }));
 
     setCurrentStudyQuestions(finalQuestions);
     setCurrentPage('study-session');
   }, [examHistory, questions, flaggedQuestions]);
+
+  const startStudyForDomain = (domain: Domain) => {
+    const studyOptions: StudyConfigOptions = {
+        studyMode: 'all-domains',
+        domains: [domain],
+        questionCount: 999, // Get all questions from this domain
+    };
+    startStudySession(studyOptions);
+  };
 
   const startWeakestDomainStudy = () => {
     if (examHistory.length === 0) return;
@@ -173,12 +200,7 @@ const App: React.FC = () => {
     );
     
     if (weakestDomainScore) {
-      const studyOptions: StudyConfigOptions = {
-        studyMode: 'all-domains',
-        domains: [weakestDomainScore.domain],
-        questionCount: 999, // Get all questions from this domain
-      };
-      startStudySession(studyOptions);
+      startStudyForDomain(weakestDomainScore.domain);
     }
   };
 
@@ -236,6 +258,8 @@ const App: React.FC = () => {
               result={selectedResult}
               onGoToDashboard={goToDashboard}
               theme={theme}
+              flaggedQuestions={flaggedQuestions}
+              onStartStudyForDomain={startStudyForDomain}
             />
           );
         }
@@ -267,6 +291,7 @@ const App: React.FC = () => {
               result={currentStudyResult}
               onGoToDashboard={goToDashboard}
               theme={theme}
+              flaggedQuestions={flaggedQuestions}
             />
           );
         }

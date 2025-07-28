@@ -212,10 +212,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartExam, onStartStudyConfig, 
         <HistoryChart history={examHistory} theme={theme} />
         <DomainPerformanceChart history={examHistory} theme={theme} />
 
+        <div className="mb-8">
+            <DevSecOps />
+        </div>
 
         <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <DevSecOps />
-
           <div className="lg:col-span-1 bg-white dark:bg-slate-800/50 p-8 rounded-2xl border border-gray-200 dark:border-slate-700 flex flex-col justify-center">
             <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-6">Start a New Session</h2>
             <div className='w-full space-y-4'>

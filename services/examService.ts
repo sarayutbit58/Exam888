@@ -943,9 +943,10 @@ export function getQuestions(): Question[] {
                 const keywords = keywordsMatch[1].trim().split(/,\s*/);
                 const explanation = explanationMatch[1].trim();
                 
-                // More robust options parsing
-                const optionRegex = /[A-D]\s(.*?)(?=\s[B-D]\s|$)/gs;
-                const options = Array.from(optionsRaw.matchAll(optionRegex), m => m[1].trim());
+                // Corrected, more robust options parsing
+                const parts = optionsRaw.split(/(?=\s[B-D]\s)/);
+                const options = parts.map(p => p.trim().replace(/^[A-D]\s/, ''));
+
 
                 if (options.length < 2) return;
 
@@ -1028,8 +1029,9 @@ export function getQuestions(): Question[] {
                 const keywords = keywordsMatch[1].trim().split(/,\s*/);
                 const explanation = explanationMatch[1].trim();
                 
-                const optionRegex = /[A-D]\s(.*?)(?=\s[B-D]\s|$)/gs;
-                const options = Array.from(optionsRaw.matchAll(optionRegex), m => m[1].trim());
+                // Corrected, more robust options parsing
+                const parts = optionsRaw.split(/(?=\s[B-D]\s)/);
+                const options = parts.map(p => p.trim().replace(/^[A-D]\s/, ''));
 
                 if (options.length < 2) return;
 

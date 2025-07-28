@@ -5,6 +5,7 @@ const IconShieldCheck = () => <svg xmlns="http://www.w3.org/2000/svg" width="24"
 const IconShieldAlert = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-yellow-500 dark:text-yellow-400"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>;
 const IconShieldX = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-red-500 dark:text-red-400"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m14.5 9.5-5 5"/><path d="m9.5 9.5 5 5"/></svg>;
 const IconExternalLink = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 ml-1 opacity-70"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>;
+const IconChevronDown: React.FC<{ className?: string }> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="6 9 12 15 18 9"></polyline></svg>;
 
 interface CheckItemProps {
     title: string;
@@ -47,6 +48,7 @@ interface SecurityCheck {
 }
 
 const DevSecOps: React.FC = () => {
+    const [isVisible, setIsVisible] = useState(false);
     const [checks, setChecks] = useState<SecurityCheck[]>([]);
 
     useEffect(() => {
@@ -125,19 +127,35 @@ const DevSecOps: React.FC = () => {
     }, []);
 
     return (
-        <div className="lg:col-span-3 bg-white dark:bg-slate-800/50 p-8 rounded-2xl border border-gray-200 dark:border-slate-700">
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">DevSecOps Security Posture</h2>
-            <p className="text-slate-500 dark:text-slate-400 mb-6 text-sm">
-                This panel provides a real-time overview of key security practices implemented in this application. DevSecOps integrates security into every phase of the development lifecycle.
-            </p>
-            <div className="space-y-4">
-                {checks.length === 0 ? <p className="text-slate-500 dark:text-slate-400">Running security checks...</p> : 
-                    checks.map((check, index) => (
-                        <CheckItem key={index} status={check.status} statusText={check.statusText} title={check.title}>
-                            {check.description}
-                        </CheckItem>
-                    ))
-                }
+        <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-gray-200 dark:border-slate-700">
+            <button
+                onClick={() => setIsVisible(!isVisible)}
+                className="w-full flex justify-between items-center text-left p-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 rounded-lg"
+                aria-expanded={isVisible}
+                aria-controls="devsecops-panel"
+            >
+                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">DevSecOps Security Posture</h2>
+                <IconChevronDown className={`h-6 w-6 text-slate-500 dark:text-slate-400 transition-transform duration-300 ${isVisible ? 'rotate-180' : ''}`} />
+            </button>
+
+            <div 
+                id="devsecops-panel"
+                className={`transition-all duration-500 ease-in-out overflow-hidden ${isVisible ? 'max-h-[1000px]' : 'max-h-0'}`}
+            >
+                <div className="px-6 pb-6 pt-2">
+                    <p className="text-slate-500 dark:text-slate-400 mb-6 text-sm">
+                        This panel provides a real-time overview of key security practices implemented in this application. DevSecOps integrates security into every phase of the development lifecycle.
+                    </p>
+                    <div className="space-y-4">
+                        {checks.length === 0 ? <p className="text-slate-500 dark:text-slate-400">Running security checks...</p> : 
+                            checks.map((check, index) => (
+                                <CheckItem key={index} status={check.status} statusText={check.statusText} title={check.title}>
+                                    {check.description}
+                                </CheckItem>
+                            ))
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     );

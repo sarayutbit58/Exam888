@@ -1,20 +1,24 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { ExamResult } from '../types';
 import ReviewQuestion from './ReviewQuestion';
 
+type FilterType = 'all' | 'correct' | 'incorrect' | 'flagged';
 
 interface StudyResultsProps {
   result: ExamResult;
   onGoToDashboard: () => void;
   theme: 'light' | 'dark';
+  flaggedQuestions: number[];
 }
 
 const IconHome = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 mr-2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
 );
 
-const StudyResults: React.FC<StudyResultsProps> = ({ result, onGoToDashboard, theme }) => {
+const StudyResults: React.FC<StudyResultsProps> = ({ result, onGoToDashboard, theme, flaggedQuestions }) => {
+  const [filter, setFilter] = useState<FilterType>('all');
   const correctCount = result.userAnswers.filter(ua => ua.isCorrect).length;
   const totalCount = result.questions.length;
   const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
@@ -24,6 +28,24 @@ const StudyResults: React.FC<StudyResultsProps> = ({ result, onGoToDashboard, th
   const tooltipBg = theme === 'dark' ? '#1e293b' : 'rgba(255,255,255,0.9)';
   const tooltipBorder = theme === 'dark' ? '#475569' : '#e5e7eb';
   const tooltipLabelColor = theme === 'dark' ? '#ffffff' : '#1e293b';
+
+  const filteredQuestionsAndAnswers = result.questions.map(question => {
+      const userAnswer = result.userAnswers.find(ua => ua.questionId === question.id);
+      return { question, userAnswer };
+  }).filter(item => {
+      if (!item.userAnswer) return false;
+      switch (filter) {
+          case 'correct':
+              return item.userAnswer.isCorrect;
+          case 'incorrect':
+              return !item.userAnswer.isCorrect;
+          case 'flagged':
+              return flaggedQuestions.includes(item.question.id);
+          case 'all':
+          default:
+              return true;
+      }
+  });
 
   return (
     <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
@@ -80,13 +102,30 @@ const StudyResults: React.FC<StudyResultsProps> = ({ result, onGoToDashboard, th
         </div>
 
         <div className="bg-white dark:bg-slate-800/50 p-6 sm:p-8 rounded-2xl border border-gray-200 dark:border-slate-700">
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-6">Question Review</h2>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Question Review</h2>
+                <div className="flex flex-wrap gap-2" role="group" aria-label="Filter questions">
+                  {(['all', 'correct', 'incorrect', 'flagged'] as FilterType[]).map(filterType => (
+                    <button
+                        key={filterType}
+                        onClick={() => setFilter(filterType)}
+                        className={`px-4 py-2 text-sm font-semibold rounded-md transition-colors ${filter === filterType ? 'bg-cyan-500 text-slate-900' : 'bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'}`}
+                    >
+                        {filterType.charAt(0).toUpperCase() + filterType.slice(1)}
+                    </button>
+                  ))}
+                </div>
+            </div>
             <div className="space-y-6">
-                {result.questions.map((question, index) => {
-                    const userAnswer = result.userAnswers.find(ua => ua.questionId === question.id);
+                {filteredQuestionsAndAnswers.map(({ question, userAnswer }, index) => {
                     if (!userAnswer) return null;
-                    return <ReviewQuestion key={index} question={question} userAnswer={userAnswer} />
+                    return <ReviewQuestion key={question.id || index} question={question} userAnswer={userAnswer} />
                 })}
+                 {filteredQuestionsAndAnswers.length === 0 && (
+                  <div className="text-center py-10">
+                    <p className="text-slate-500 dark:text-slate-400">No questions match the filter '{filter}'.</p>
+                  </div>
+                )}
             </div>
         </div>
       </div>
